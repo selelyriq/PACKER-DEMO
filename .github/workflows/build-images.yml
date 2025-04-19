@@ -13,6 +13,33 @@ permissions:
   contents: read
 
 jobs:
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.5"
+      - name: Initialize Packer
+        run: packer init .
+      - name: Format Packer Files
+        run: packer fmt .
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.5"
+      - name: Initialize Packer
+        run: packer init .
+      - name: Validate Packer Files
+        run: packer validate .
+
   build-aws:
     runs-on: ubuntu-latest
     steps:
@@ -24,7 +51,7 @@ jobs:
           version: "1.8.5"
       
       - name: Initialize Packer
-        run: packer init .
+        run: packer init packer/
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -33,23 +60,19 @@ jobs:
           aws-region: us-east-2
           role-session-name: GitHubPipeline
 
-      # Create Packer Variables File (you do need this btw, its mandatory)
+      # Create Packer Variables File
       - name: Create Packer Variables File
         run: |
-          cat << EOF > build.pkrvars.hcl
+          cat << EOF > packer/build.pkrvars.hcl
           secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
           aws_region = "us-east-2"
           instance_type = "t3.medium"
           EOF
 
-      - name: Build Base Informatica Image
-        id: build-aws
+      - name: Build AWS Image
         env:
           PACKER_LOG: 1
-        run: |
-          AMI_ID=$(packer build -var-file="build.pkrvars.hcl" -only="informatica-aws.*" . | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
-          echo "Built AMI: $AMI_ID"
-          echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
+        run: packer build -var-file="packer/build.pkrvars.hcl" -only="informatica-aws.*" packer/
 
   aws-addons:
     needs: build-aws

@@ -1,7 +1,7 @@
 # Common Variables
 variable "informatica_script_path" {
   type    = string
-  default = "informatica_install.sh"
+  default = "scripts/informatica_install.sh"
 }
 
 variable "image_name_prefix" {
