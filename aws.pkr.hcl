@@ -40,19 +40,33 @@ build {
   name    = "informatica-aws"
   sources = ["source.amazon-ebs.informatica"]
 
-  # Upload and prepare the Informatica install script
+  # Upload the install script
   provisioner "file" {
     source      = "informatica_install.sh"
     destination = "/tmp/informatica_install.sh"
   }
 
-  # Set up environment variables for the install script
+  # Move, set permissions, and verify everything
   provisioner "shell" {
     inline = [
+      # Confirm the file landed in /tmp
+      "echo '[DEBUG] Checking /tmp after upload...'",
+      "ls -la /tmp/informatica_install.sh || echo '[ERROR] Script missing in /tmp'",
+
+      # Create /images directory if not present
+      "echo '[DEBUG] Creating /images directory...'",
       "sudo mkdir -p /images",
-      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh",
+
+      # Move the file and make it executable
+      "echo '[DEBUG] Moving script to /images...'",
+      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh || echo '[ERROR] Move failed'",
+
+      # Permissions and visibility
+      "echo '[DEBUG] Making script executable...'",
       "sudo chmod +x /images/informatica_install.sh",
-      "ls -la /images/informatica_install.sh"  # Debug: verify file exists
+
+      "echo '[DEBUG] Final check of /images...'",
+      "ls -la /images/informatica_install.sh || echo '[ERROR] Script missing in /images after move'"
     ]
   }
 
@@ -89,4 +103,3 @@ build {
     ]
   }
 }
-
