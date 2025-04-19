@@ -32,6 +32,14 @@ jobs:
           role-to-assume: arn:aws:iam::291847254387:role/GitHubPipeline
           aws-region: us-east-1
           role-session-name: GitHubPipeline
+
+      - name: Create Packer Variables File
+        run: |
+          cat << EOF > build.pkrvars.hcl
+          secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
+          aws_region = "us-east-1"
+          instance_type = "t3.medium"
+          EOF
       
       - name: Build AWS Image
         env:
