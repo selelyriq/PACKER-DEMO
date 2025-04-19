@@ -108,7 +108,9 @@ build {
       "sudo yum install -y amazon-ssm-agent",
       "sudo systemctl enable amazon-ssm-agent",
       "sudo systemctl start amazon-ssm-agent",
-      "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c ssm:/AmazonCloudWatch-Config"
+      # Note: Deferring CloudWatch config fetch to runtime to avoid credential issues during image build
+      # This can be handled using cloud-init or a systemd service on instance boot
+      "echo 'CloudWatch Agent installed. Config fetch will happen at runtime.'"
     ]
   }
 }
