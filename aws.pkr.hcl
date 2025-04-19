@@ -42,7 +42,7 @@ build {
 
   # Upload and prepare the Informatica install script
   provisioner "file" {
-    source      = "informatica_install_script_v4.sh"
+    source      = "informatica_install.sh"
     destination = "/tmp/informatica_install.sh"
   }
 
