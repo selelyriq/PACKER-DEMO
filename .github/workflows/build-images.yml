@@ -33,6 +33,15 @@ jobs:
           aws-region: us-east-2
           role-session-name: GitHubPipeline
 
+      # Create Packer Variables File (you do need this btw, its mandatory)
+      - name: Create Packer Variables File
+        run: |
+          cat << EOF > build.pkrvars.hcl
+          secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
+          aws_region = "us-east-2"
+          instance_type = "t3.medium"
+          EOF
+
       # - name: Get Latest Amazon Linux 2 AMI
       #   id: get-ami
       #   run: |
