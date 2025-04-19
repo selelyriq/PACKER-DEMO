@@ -44,12 +44,6 @@ jobs:
       #       --region us-east-2)
       #     echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
-      - name: Create Packer Variables File
-        run: |
-          cat << EOF > build.pkrvars.hcl
-          secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
-          EOF
-      
       - name: Build AWS Image
         env:
           PACKER_LOG: 1
