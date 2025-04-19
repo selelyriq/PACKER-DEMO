@@ -43,7 +43,3 @@ variable "secagent_url" {
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 } 
-
-variable "aws_source_ami" {
-  type    = string
-}

@@ -21,7 +21,7 @@ variable "instance_type" {
 
 variable "aws_source_ami" {
   type    = string
-  default = var.aws_source_ami # Amazon Linux 2 AMI ID - update as needed
+  default = ami-04985531f48a27ae7 # Amazon Linux 2 AMI ID - update as needed
 }
 
 # Source block for AWS
