@@ -7,29 +7,30 @@ source "amazon-ebs" "aws-addons" {
 }
 
 build {
-  name    = "aws-addons"
-  sources = ["source.amazon-ebs.aws-addons"]
+    name    = "aws-addons"
+    sources = ["source.amazon-ebs.aws-addons"]
+
+        provisioner "file" {
+        source      = "scripts/setup-cloudwatch-agent.sh"
+        destination = "/tmp/setup-cloudwatch-agent.sh"
+    }
+
+    provisioner "shell" {
+        inline = [
+        "chmod +x /tmp/setup-cloudwatch-agent.sh",
+        "sudo /tmp/setup-cloudwatch-agent.sh"
+        ]
+    }
 
     provisioner "file" {
-    source      = "scripts/setup-cloudwatch-agent.sh"
-    destination = "/tmp/setup-cloudwatch-agent.sh"
-  }
+        source      = "scripts/cloudwatch-configuration.sh"
+        destination = "/tmp/cloudwatch-configuration.sh"
+    }
 
-  provisioner "shell" {
-    inline = [
-      "chmod +x /tmp/setup-cloudwatch-agent.sh",
-      "sudo /tmp/setup-cloudwatch-agent.sh"
-    ]
-  }
-
-  provisioner "file" {
-    source      = "scripts/cloudwatch-configuration.sh"
-    destination = "/tmp/cloudwatch-configuration.sh"
-  }
-
-  provisioner "shell" {
-    inline = [
-      "chmod +x /tmp/cloudwatch-configuration.sh",
-      "sudo /tmp/cloudwatch-configuration.sh"
-    ]
-}
+    provisioner "shell" {
+        inline = [
+        "chmod +x /tmp/cloudwatch-configuration.sh",
+        "sudo /tmp/cloudwatch-configuration.sh"
+        ]
+    }
+}    
