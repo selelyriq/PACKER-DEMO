@@ -28,6 +28,7 @@ jobs:
         run: packer fmt .
 
   validate:
+    needs: fmt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +42,7 @@ jobs:
         run: packer validate .
 
   build-aws:
+    needs: validate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
