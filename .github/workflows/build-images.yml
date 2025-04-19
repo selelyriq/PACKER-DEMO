@@ -42,39 +42,43 @@ jobs:
           instance_type = "t3.medium"
           EOF
 
-      - name: Build AWS Image
+      - name: Build Base Informatica Image
+        id: build-aws
         env:
           PACKER_LOG: 1
-        run: packer build -var-file="build.pkrvars.hcl" -only="informatica-aws.*" .
+        run: |
+          AMI_ID=$(packer build -var-file="build.pkrvars.hcl" -only="informatica-aws.*" . | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
+          echo "Built AMI: $AMI_ID"
+          echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
-#   build-azure:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-      
-#       - name: Setup Packer
-#         uses: hashicorp/setup-packer@main
-#         with:
-#           version: "1.8.5"
-      
-#       - name: Initialize Packer
-#         run: packer init .
-      
-#       - name: Create Packer Variables File
-#         run: |
-#           cat << EOF > build.pkrvars.hcl
-#           secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
-#           azure_subscription_id = "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
-#           azure_resource_group = "${{ secrets.AZURE_RESOURCE_GROUP }}"
-#           EOF
+  aws-addons:
+    needs: build-aws
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-#       - name: Build Azure Image
-#         env:
-#           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
-#           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
-#           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
-#           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
-#         run: |
-#           packer build \
-#             -var-file="build.pkrvars.hcl" \
-#             -only="informatica-azure.*" . 
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.5"
+
+      - name: Initialize Packer
+        run: packer init .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::291847254387:role/GitHubPipeline
+          aws-region: us-east-2
+          role-session-name: GitHubPipeline
+
+      - name: Create Packer Variables File
+        run: |
+          cat << EOF > build.pkrvars.hcl
+          base_ami_id = "${{ needs.build-aws.outputs.ami_id }}"
+          aws_region  = "us-east-2"
+          EOF
+
+      - name: Add AWS Tools to Base Image
+        run: |
+          packer build -var-file="build.pkrvars.hcl" -only="aws-addons.*" .
