@@ -86,8 +86,17 @@ build {
   provisioner "shell" {
     inline = [
       "source /tmp/informatica_env.sh",
-      "cd /images",
-      "sudo -E /images/informatica_install.sh"
+      "echo '[DEBUG] Contents of /images before execution:'",
+      "ls -la /images || echo '[ERROR] /images missing or unreadable'",
+
+      "echo '[DEBUG] File type:'",
+      "file /images/informatica_install.sh || echo '[ERROR] File not found or invalid'",
+
+      "echo '[DEBUG] File contents head:'",
+      "head -n 5 /images/informatica_install.sh || echo '[ERROR] Could not read script'",
+
+      "echo '[DEBUG] Executing script now...'",
+      "sudo -E /images/informatica_install.sh || echo '[ERROR] Execution failed'"
     ]
   }
 
