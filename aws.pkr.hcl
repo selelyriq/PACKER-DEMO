@@ -19,17 +19,12 @@ variable "instance_type" {
   default = "t3.medium"
 }
 
-variable "aws_source_ami" {
-  type    = string
-  default = ""  # Will be set by build.pkrvars.hcl
-}
-
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = var.aws_source_ami
+  source_ami    = "ami-04985531f48a27ae7"
   ssh_username  = "ec2-user"
 
   tags = {
@@ -54,9 +49,16 @@ build {
   # Set up environment variables for the install script
   provisioner "shell" {
     inline = [
-      "chmod +x /tmp/informatica_install.sh",
       "sudo mkdir -p /images",
       "sudo mv /tmp/informatica_install.sh /images/informatica_install_script_v4.sh",
+      "sudo chmod +x /images/informatica_install_script_v4.sh",
+      "ls -la /images/informatica_install_script_v4.sh"  # Debug: verify file exists
+    ]
+  }
+
+  # Set up environment variables
+  provisioner "shell" {
+    inline = [
       "echo 'export infauseruname=${var.infauser_name}' | sudo tee -a /tmp/informatica_env.sh",
       "echo 'export infausergname=${var.infauser_group}' | sudo tee -a /tmp/informatica_env.sh",
       "echo 'export infausergid=${var.infauser_gid}' | sudo tee -a /tmp/informatica_env.sh",
@@ -70,7 +72,8 @@ build {
   provisioner "shell" {
     inline = [
       "source /tmp/informatica_env.sh",
-      "sudo -E /images/informatica_install_script_v4.sh"
+      "cd /images",
+      "sudo -E ./informatica_install_script_v4.sh"
     ]
   }
 
