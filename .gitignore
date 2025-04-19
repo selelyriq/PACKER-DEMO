@@ -1,7 +1,15 @@
+# System files
+.DS_Store
+.cursor/
+
+# Packer files
+*.pkr.hcl.json
+packer_cache/
+*.log
+
+# Local variables
+local.pkrvars.hcl
+
 # Packer variable files
 *.auto.pkrvars.hcl
-local.pkrvars.hcl
-build.pkrvars.hcl
-
-# Packer cache
-packer_cache/ 
+build.pkrvars.hcl 

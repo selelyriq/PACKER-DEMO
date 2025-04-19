@@ -1,7 +1,7 @@
 # Common Variables
 variable "informatica_script_path" {
   type    = string
-  default = "./informatica_install_script_v4.sh"  # Script is now in the same directory
+  default = "informatica_install.sh"
 }
 
 variable "image_name_prefix" {
@@ -38,6 +38,17 @@ variable "infauser_gid" {
 variable "secagent_url" {
   type        = string
   description = "URL for the Informatica secure agent installer"
+}
+
+# AWS-specific variables
+variable "aws_region" {
+  type    = string
+  default = "us-east-2"
+}
+
+variable "instance_type" {
+  type    = string
+  default = "t3.medium"
 }
 
 locals {

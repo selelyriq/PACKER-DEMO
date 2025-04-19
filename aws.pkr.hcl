@@ -8,17 +8,6 @@ packer {
   }
 }
 
-# AWS-specific variables
-variable "aws_region" {
-  type    = string
-  default = "us-east-2"
-}
-
-variable "instance_type" {
-  type    = string
-  default = "t3.medium"
-}
-
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
@@ -40,33 +29,18 @@ build {
   name    = "informatica-aws"
   sources = ["source.amazon-ebs.informatica"]
 
-  # Upload the install script
+  # Upload and prepare the Informatica install script
   provisioner "file" {
-    source      = "informatica_install.sh"
+    source      = var.informatica_script_path
     destination = "/tmp/informatica_install.sh"
   }
 
-  # Move, set permissions, and verify everything
+  # Set up environment variables for the install script
   provisioner "shell" {
     inline = [
-      # Confirm the file landed in /tmp
-      "echo '[DEBUG] Checking /tmp after upload...'",
-      "ls -la /tmp/informatica_install.sh || echo '[ERROR] Script missing in /tmp'",
-
-      # Create /images directory if not present
-      "echo '[DEBUG] Creating /images directory...'",
       "sudo mkdir -p /images",
-
-      # Move the file and make it executable
-      "echo '[DEBUG] Moving script to /images...'",
-      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh || echo '[ERROR] Move failed'",
-
-      # Permissions and visibility
-      "echo '[DEBUG] Making script executable...'",
-      "sudo chmod +x /images/informatica_install.sh",
-
-      "echo '[DEBUG] Final check of /images...'",
-      "ls -la /images/informatica_install.sh || echo '[ERROR] Script missing in /images after move'"
+      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh",
+      "sudo chmod +x /images/informatica_install.sh"
     ]
   }
 
@@ -86,17 +60,7 @@ build {
   provisioner "shell" {
     inline = [
       "source /tmp/informatica_env.sh",
-      "echo '[DEBUG] Contents of /images before execution:'",
-      "ls -la /images || echo '[ERROR] /images missing or unreadable'",
-
-      "echo '[DEBUG] File type:'",
-      "file /images/informatica_install.sh || echo '[ERROR] File not found or invalid'",
-
-      "echo '[DEBUG] File contents head:'",
-      "head -n 5 /images/informatica_install.sh || echo '[ERROR] Could not read script'",
-
-      "echo '[DEBUG] Executing script now...'",
-      "sudo -E /images/informatica_install.sh || echo '[ERROR] Execution failed'"
+      "sudo -E /images/informatica_install.sh"
     ]
   }
 
@@ -108,8 +72,6 @@ build {
       "sudo yum install -y amazon-ssm-agent",
       "sudo systemctl enable amazon-ssm-agent",
       "sudo systemctl start amazon-ssm-agent",
-      # Note: Deferring CloudWatch config fetch to runtime to avoid credential issues during image build
-      # This can be handled using cloud-init or a systemd service on instance boot
       "echo 'CloudWatch Agent installed. Config fetch will happen at runtime.'"
     ]
   }
