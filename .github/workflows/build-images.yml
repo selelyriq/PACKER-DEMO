@@ -1,0 +1,57 @@
+name: Build Multi-Cloud Images
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-aws:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.5"
+      
+      - name: Initialize Packer
+        run: packer init .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::291847254387:role/GitHub_LabInfra
+          role-session-name: GitHub_LabInfra
+      
+      - name: Build AWS Image
+        run: packer build -only="informatica-aws.*" .
+
+#   build-azure:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v4
+      
+#       - name: Setup Packer
+#         uses: hashicorp/setup-packer@main
+#         with:
+#           version: "1.8.5"
+      
+#       - name: Initialize Packer
+#         run: packer init .
+      
+#       - name: Build Azure Image
+#         env:
+#           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+#           ARM_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+#           ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+#           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+#         run: |
+#           packer build \
+#             -var "azure_subscription_id=$ARM_SUBSCRIPTION_ID" \
+#             -var "azure_resource_group=${{ secrets.AZURE_RESOURCE_GROUP }}" \
+#             -only="informatica-azure.*" . 
