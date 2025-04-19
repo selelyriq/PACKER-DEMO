@@ -42,7 +42,7 @@ build {
 
   # Upload and prepare the Informatica install script
   provisioner "file" {
-    source      = "images/informatica_install_script_v4.sh"
+    source      = "./informatica_install_script_v4.sh"
     destination = "/tmp/informatica_install.sh"
   }
 
@@ -73,7 +73,7 @@ build {
     inline = [
       "source /tmp/informatica_env.sh",
       "cd /images",
-      "sudo -E images/informatica_install_script_v4.sh"
+      "sudo -E ./informatica_install_script_v4.sh"
     ]
   }
 
