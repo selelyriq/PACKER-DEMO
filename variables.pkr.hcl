@@ -1,7 +1,7 @@
 # Common Variables
 variable "informatica_script_path" {
   type    = string
-  default = "images/informatica_install_script_v4.sh"  # Relative path from Packer working directory
+  default = "images/informatica_install_script_v4.sh" # Relative path from Packer working directory
 }
 
 variable "image_name_prefix" {

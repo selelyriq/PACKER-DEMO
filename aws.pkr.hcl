@@ -42,7 +42,7 @@ source "amazon-ebs" "informatica" {
 
 # Build block for AWS
 build {
-  name = "informatica-aws"
+  name    = "informatica-aws"
   sources = ["source.amazon-ebs.informatica"]
 
   # Upload and prepare the Informatica install script

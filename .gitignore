@@ -1,0 +1,7 @@
+# Packer variable files
+*.auto.pkrvars.hcl
+local.pkrvars.hcl
+build.pkrvars.hcl
+
+# Packer cache
+packer_cache/ 

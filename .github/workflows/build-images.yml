@@ -36,7 +36,7 @@ jobs:
       - name: Build AWS Image
         env:
           PACKER_LOG: 1
-        run: packer build -only="informatica-aws.*" .
+        run: packer build -var-file="build.pkrvars.hcl" -only="informatica-aws.*" .
 
 #   build-azure:
 #     runs-on: ubuntu-latest
@@ -51,6 +51,14 @@ jobs:
 #       - name: Initialize Packer
 #         run: packer init .
       
+#       - name: Create Packer Variables File
+#         run: |
+#           cat << EOF > build.pkrvars.hcl
+#           secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
+#           azure_subscription_id = "${{ secrets.AZURE_SUBSCRIPTION_ID }}"
+#           azure_resource_group = "${{ secrets.AZURE_RESOURCE_GROUP }}"
+#           EOF
+
 #       - name: Build Azure Image
 #         env:
 #           ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
@@ -59,6 +67,5 @@ jobs:
 #           ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
 #         run: |
 #           packer build \
-#             -var "azure_subscription_id=$ARM_SUBSCRIPTION_ID" \
-#             -var "azure_resource_group=${{ secrets.AZURE_RESOURCE_GROUP }}" \
+#             -var-file="build.pkrvars.hcl" \
 #             -only="informatica-azure.*" . 
