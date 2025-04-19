@@ -25,7 +25,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
-          role-to-assume: arn:aws:iam::291847254387:role/GitHub_LabInfra
+          role-to-assume: arn:aws:iam::291847254387:role/GitHubPipeline
           role-session-name: GitHub_LabInfra
       
       - name: Build AWS Image
