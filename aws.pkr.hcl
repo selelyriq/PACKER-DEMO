@@ -19,12 +19,17 @@ variable "instance_type" {
   default = "t3.medium"
 }
 
+variable "aws_source_ami" {
+  type    = string
+  default = ""  # Will be set by build.pkrvars.hcl
+}
+
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-04985531f48a27ae7"
+  source_ami    = var.aws_source_ami
   ssh_username  = "ec2-user"
 
   tags = {
