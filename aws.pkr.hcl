@@ -42,7 +42,7 @@ build {
 
   # Upload and prepare the Informatica install script
   provisioner "file" {
-    source      = "./informatica_install_script_v4.sh"
+    source      = "informatica_install_script_v4.sh"
     destination = "/tmp/informatica_install.sh"
   }
 
@@ -50,9 +50,9 @@ build {
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /images",
-      "sudo mv /tmp/informatica_install.sh /images/informatica_install_script_v4.sh",
-      "sudo chmod +x /images/informatica_install_script_v4.sh",
-      "ls -la /images/informatica_install_script_v4.sh"  # Debug: verify file exists
+      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh",
+      "sudo chmod +x /images/informatica_install.sh",
+      "ls -la /images/informatica_install.sh"  # Debug: verify file exists
     ]
   }
 
@@ -73,7 +73,7 @@ build {
     inline = [
       "source /tmp/informatica_env.sh",
       "cd /images",
-      "sudo -E ./informatica_install_script_v4.sh"
+      "sudo -E /images/informatica_install.sh"
     ]
   }
 
