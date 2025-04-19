@@ -73,7 +73,7 @@ build {
     inline = [
       "source /tmp/informatica_env.sh",
       "cd /images",
-      "sudo -E ./informatica_install_script_v4.sh"
+      "sudo -E ./images/informatica_install_script_v4.sh"
     ]
   }
 
