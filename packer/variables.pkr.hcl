@@ -45,7 +45,7 @@ variable "infauser_uid" {
 variable "aws_region" {
   type        = string
   description = "AWS region to build the AMI in"
-  default     = "us-east-1"
+  default     = "us-east-2"
 }
 
 variable "instance_type" {

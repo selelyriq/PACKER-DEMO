@@ -4,11 +4,12 @@ data "amazon-ami" "base" {
     image-id = "ami-0cc2ed4853f2b5d33"
   }
   owners = ["self"]
+  most_recent = true
 }
 
 # Source block for AWS
 source "amazon-ebs" "informatica" {
-  region        = var.aws_region
+  region        = data.amazon-ami.base.region  # Use the region where the AMI was found
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
   source_ami    = data.amazon-ami.base.id
