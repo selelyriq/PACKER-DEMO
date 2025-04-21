@@ -1,19 +1,9 @@
-# Data source to verify AMI exists in the specified region
-data "amazon-ami" "base" {
-  region = var.aws_region
-  filters = {
-    image-id = "ami-0cc2ed4853f2b5d33"
-  }
-  owners = ["self"]
-  most_recent = true
-}
-
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = data.amazon-ami.base.id
+  source_ami    = "ami-0cc2ed4853f2b5d33"
   ssh_username  = "ec2-user"
 
   tags = {
