@@ -5,56 +5,59 @@ variable "informatica_script_path" {
 }
 
 variable "image_name_prefix" {
-  type    = string
-  default = "informatica-agent"
+  type        = string
+  description = "Prefix for the AMI name"
+  default     = "informatica"
 }
 
 variable "image_version" {
-  type    = string
-  default = "1.0.0"
+  type        = string
+  description = "Version of the AMI"
+  default     = "1.0.0"
 }
 
 # Informatica Installation Variables
 variable "infauser_name" {
-  type    = string
-  default = "infauser"
+  type        = string
+  description = "Informatica user name"
+  default     = "infauser"
 }
 
 variable "infauser_group" {
-  type    = string
-  default = "infauser"
-}
-
-variable "infauser_uid" {
-  type    = string
-  default = "10001"
+  type        = string
+  description = "Informatica user group"
+  default     = "infauser"
 }
 
 variable "infauser_gid" {
-  type    = string
-  default = "10001"
+  type        = string
+  description = "Informatica user group ID"
+  default     = "1001"
 }
 
-variable "secagent_url" {
+variable "infauser_uid" {
   type        = string
-  description = "URL for the Informatica secure agent installer"
+  description = "Informatica user ID"
+  default     = "1001"
 }
 
 # AWS-specific variables
 variable "aws_region" {
-  type    = string
-  default = "us-east-2"
+  type        = string
+  description = "AWS region to build the AMI in"
+  default     = "us-east-1"
 }
 
 variable "instance_type" {
-  type    = string
-  default = "t3.medium"
+  type        = string
+  description = "EC2 instance type to use for building the AMI"
+  default     = "t2.large"
 }
 
 variable "base_ami_id" {
   type        = string
-  description = "The base AMI ID to use for the addons build"
-  default     = "" # This will be set by the pipeline
+  description = "Base AMI ID to use for building the addons AMI"
+  default     = ""
 }
 
 locals {

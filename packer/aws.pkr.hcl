@@ -41,7 +41,6 @@ build {
       "echo 'export infausergname=${var.infauser_group}' | sudo tee -a /tmp/informatica_env.sh",
       "echo 'export infausergid=${var.infauser_gid}' | sudo tee -a /tmp/informatica_env.sh",
       "echo 'export infauseruid=${var.infauser_uid}' | sudo tee -a /tmp/informatica_env.sh",
-      "echo 'export secagenturl=${var.secagent_url}' | sudo tee -a /tmp/informatica_env.sh",
       "sudo chmod +x /tmp/informatica_env.sh"
     ]
   }
