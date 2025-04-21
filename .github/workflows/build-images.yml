@@ -105,11 +105,17 @@ jobs:
           aws-region: us-east-2
           role-session-name: GitHubPipeline
 
+      # Create Packer Variables File with base AMI ID
+      - name: Create Packer Variables File
+        run: |
+          cat << EOF > packer/variables.auto.pkrvars.hcl
+          aws_region = "us-east-2"
+          instance_type = "t3.medium"
+          base_ami_id = "${{ needs.build-aws.outputs.base_ami_id }}"
+          EOF
+
       - name: Build AWS Addons Image
         env:
           PACKER_LOG: 1
         run: |
-          packer build \
-            -var="base_ami_id=${{ needs.build-aws.outputs.base_ami_id }}" \
-            -only="informatica-aws-addons.*" \
-            packer/
+          packer build -only="informatica-aws-addons.*" packer/

@@ -1,8 +1,17 @@
+# Data source to get the base AMI
+data "amazon-ami" "base" {
+  filters = {
+    name = "${var.image_name_prefix}-aws-${var.image_version}-*"
+  }
+  most_recent = true
+  owners      = ["self"]
+}
+
 # Source block for AWS Addons
 source "amazon-ebs" "informatica-addons" {
   region        = var.aws_region
   instance_type = var.instance_type
-  source_ami    = coalesce(var.base_ami_id, "ami-04985531f48a27ae7") # Use base_ami_id if provided, otherwise use default
+  source_ami    = coalesce(var.base_ami_id, data.amazon-ami.base.id)
   ami_name      = "${var.image_name_prefix}-aws-addons-${var.image_version}-${local.timestamp}"
   ssh_username  = "ec2-user"
 
