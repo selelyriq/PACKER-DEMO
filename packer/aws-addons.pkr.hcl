@@ -8,15 +8,20 @@ data "amazon-ami" "base" {
 }
 
 # Source block for AWS Addons
-source "amazon-ebs" "informatica-addons" {
+source "amazon-ebs" "cloudwatch-addons" {
   region        = var.aws_region
   instance_type = var.instance_type
-  source_ami    = coalesce(var.base_ami_id, data.amazon-ami.base.id)
-  ami_name      = "${var.image_name_prefix}-aws-addons-${var.image_version}-${local.timestamp}"
+  # Use the base AMI ID if provided, otherwise use the data source
+  source_ami    = var.base_ami_id != "" ? var.base_ami_id : data.amazon-ami.base.id
+  ami_name      = "${var.image_name_prefix}-aws-cloudwatch-${var.image_version}-${local.timestamp}"
   ssh_username  = "ec2-user"
 
+  # Add SSH settings
+  ssh_timeout = "5m"
+  ssh_interface = "public_ip"
+
   tags = {
-    Name        = "${var.image_name_prefix}-aws-addons"
+    Name        = "${var.image_name_prefix}-aws-cloudwatch"
     Version     = var.image_version
     Environment = "production"
     Builder     = "packer"
@@ -25,8 +30,8 @@ source "amazon-ebs" "informatica-addons" {
 
 # Build block for AWS Addons
 build {
-  name    = "informatica-aws-addons"
-  sources = ["source.amazon-ebs.informatica-addons"]
+  name    = "cloudwatch-aws-addons"
+  sources = ["source.amazon-ebs.cloudwatch-addons"]
 
   # Install additional AWS tools and configurations
   provisioner "shell" {

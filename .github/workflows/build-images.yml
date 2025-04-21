@@ -84,7 +84,7 @@ jobs:
           echo "Built base AMI: $AMI_ID"
           echo "base_ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
-  aws-addons:
+  build-cloudwatch:
     needs: build-aws
     runs-on: ubuntu-latest
     steps:
@@ -108,14 +108,16 @@ jobs:
       # Create Packer Variables File with base AMI ID
       - name: Create Packer Variables File
         run: |
+          BASE_AMI_ID="${{ needs.build-aws.outputs.base_ami_id }}"
+          echo "Using base AMI ID: $BASE_AMI_ID"
           cat << EOF > packer/variables.auto.pkrvars.hcl
           aws_region = "us-east-2"
           instance_type = "t3.medium"
-          base_ami_id = "${{ needs.build-aws.outputs.base_ami_id }}"
+          base_ami_id = "$BASE_AMI_ID"
           EOF
 
-      - name: Build AWS Addons Image
+      - name: Build CloudWatch Addons Image
         env:
           PACKER_LOG: 1
         run: |
-          packer build -only="informatica-aws-addons.*" packer/
+          packer build -only="cloudwatch-aws-addons.*" packer/
