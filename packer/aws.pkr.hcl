@@ -1,5 +1,6 @@
-# Data source to verify AMI exists
+# Data source to verify AMI exists in the specified region
 data "amazon-ami" "base" {
+  region = var.aws_region
   filters = {
     image-id = "ami-0cc2ed4853f2b5d33"
   }
@@ -9,7 +10,7 @@ data "amazon-ami" "base" {
 
 # Source block for AWS
 source "amazon-ebs" "informatica" {
-  region        = data.amazon-ami.base.region  # Use the region where the AMI was found
+  region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
   source_ami    = data.amazon-ami.base.id
