@@ -70,8 +70,7 @@ jobs:
       # Create Packer Variables File
       - name: Create Packer Variables File
         run: |
-          cat << EOF > packer/build.pkrvars.hcl
-          secagent_url = "${{ secrets.INFORMATICA_AGENT_URL }}"
+          cat << EOF > packer/variables.auto.pkrvars.hcl
           aws_region = "us-east-2"
           instance_type = "t3.medium"
           EOF
@@ -81,7 +80,7 @@ jobs:
         env:
           PACKER_LOG: 1
         run: |
-          AMI_ID=$(packer build -var-file="packer/build.pkrvars.hcl" -only="informatica-aws.*" packer/ | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
+          AMI_ID=$(packer build -only="informatica-aws.*" packer/ | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
           echo "Built base AMI: $AMI_ID"
           echo "base_ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
@@ -111,7 +110,6 @@ jobs:
           PACKER_LOG: 1
         run: |
           packer build \
-            -var-file="packer/build.pkrvars.hcl" \
             -var="base_ami_id=${{ needs.build-aws.outputs.base_ami_id }}" \
             -only="informatica-aws-addons.*" \
             packer/
