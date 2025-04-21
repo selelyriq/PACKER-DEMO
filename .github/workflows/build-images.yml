@@ -75,49 +75,8 @@ jobs:
           instance_type = "t3.medium"
           EOF
 
-      - name: Build Base AWS Image
-        id: build-base
+      - name: Build AWS Image
         env:
           PACKER_LOG: 1
         run: |
-          AMI_ID=$(packer build -only="informatica-aws.*" packer/ | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
-          echo "Built base AMI: $AMI_ID"
-          echo "base_ami_id=$AMI_ID" >> $GITHUB_OUTPUT
-
-  build-cloudwatch:
-    needs: build-aws
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Packer
-        uses: hashicorp/setup-packer@main
-        with:
-          version: "1.8.5"
-      
-      - name: Initialize Packer
-        run: packer init packer/
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: arn:aws:iam::291847254387:role/GitHubPipeline
-          aws-region: us-east-2
-          role-session-name: GitHubPipeline
-
-      # Create Packer Variables File with base AMI ID
-      - name: Create Packer Variables File
-        run: |
-          BASE_AMI_ID="${{ needs.build-aws.outputs.base_ami_id }}"
-          echo "Using base AMI ID: $BASE_AMI_ID"
-          cat << EOF > packer/variables.auto.pkrvars.hcl
-          aws_region = "us-east-2"
-          instance_type = "t3.medium"
-          base_ami_id = "$BASE_AMI_ID"
-          EOF
-
-      - name: Build CloudWatch Addons Image
-        env:
-          PACKER_LOG: 1
-        run: |
-          packer build -only="cloudwatch-aws-addons.*" packer/
+          packer build -only="informatica-aws.*" packer/

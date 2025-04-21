@@ -3,7 +3,7 @@ source "amazon-ebs" "informatica" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-04985531f48a27ae7"
+  source_ami    = "ami-0cc2ed4853f2b5d33" # Base AMI with CloudWatch and SSM
   ssh_username  = "ec2-user"
 
   tags = {
