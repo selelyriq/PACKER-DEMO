@@ -1,9 +1,17 @@
+# Data source to verify AMI exists
+data "amazon-ami" "base" {
+  filters = {
+    image-id = "ami-0cc2ed4853f2b5d33"
+  }
+  owners = ["self"]
+}
+
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-0cc2ed4853f2b5d33"  # Your custom base AMI
+  source_ami    = data.amazon-ami.base.id
   ssh_username  = "ec2-user"
 
   tags = {
