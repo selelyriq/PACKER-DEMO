@@ -1,13 +1,3 @@
-# Required Plugins
-packer {
-  required_plugins {
-    amazon = {
-      version = ">= 1.0.0"
-      source  = "github.com/hashicorp/amazon"
-    }
-  }
-}
-
 # Source block for AWS
 source "amazon-ebs" "informatica" {
   region        = var.aws_region
@@ -31,7 +21,7 @@ build {
 
   # Upload and prepare the Informatica install script
   provisioner "file" {
-    source      = "scripts/informatica_install.sh"
+    source      = "packer/scripts/informatica_install.sh"
     destination = "/tmp/informatica_install.sh"
   }
 

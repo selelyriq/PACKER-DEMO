@@ -13,33 +13,38 @@ permissions:
   contents: read
 
 jobs:
-
   fmt:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: "1.8.5"
+      
       - name: Initialize Packer
-        run: packer init .
+        run: packer init packer/
+      
       - name: Format Packer Files
-        run: packer fmt .
+        run: packer fmt packer/
 
   validate:
     needs: fmt
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: "1.8.5"
+      
       - name: Initialize Packer
-        run: packer init .
+        run: packer init packer/
+      
       - name: Validate Packer Files
-        run: packer validate .
+        run: packer validate packer/
 
   build-aws:
     needs: validate
@@ -71,24 +76,28 @@ jobs:
           instance_type = "t3.medium"
           EOF
 
-      - name: Build AWS Image
+      - name: Build Base AWS Image
+        id: build-base
         env:
           PACKER_LOG: 1
-        run: packer build -var-file="packer/build.pkrvars.hcl" -only="informatica-aws.*" packer/
+        run: |
+          AMI_ID=$(packer build -var-file="packer/build.pkrvars.hcl" -only="informatica-aws.*" packer/ | grep -o 'ami-[a-zA-Z0-9]\+' | tail -1)
+          echo "Built base AMI: $AMI_ID"
+          echo "base_ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
   aws-addons:
     needs: build-aws
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
       - name: Setup Packer
         uses: hashicorp/setup-packer@main
         with:
           version: "1.8.5"
-
+      
       - name: Initialize Packer
-        run: packer init .
+        run: packer init packer/
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -97,13 +106,12 @@ jobs:
           aws-region: us-east-2
           role-session-name: GitHubPipeline
 
-      - name: Create Packer Variables File
+      - name: Build AWS Addons Image
+        env:
+          PACKER_LOG: 1
         run: |
-          cat << EOF > build.pkrvars.hcl
-          base_ami_id = "${{ needs.build-aws.outputs.ami_id }}"
-          aws_region  = "us-east-2"
-          EOF
-
-      - name: Add AWS Tools to Base Image
-        run: |
-          packer build -var-file="build.pkrvars.hcl" -only="aws-addons.*" .
+          packer build \
+            -var-file="packer/build.pkrvars.hcl" \
+            -var="base_ami_id=${{ needs.build-aws.outputs.base_ami_id }}" \
+            -only="informatica-aws-addons.*" \
+            packer/

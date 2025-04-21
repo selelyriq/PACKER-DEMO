@@ -51,6 +51,12 @@ variable "instance_type" {
   default = "t3.medium"
 }
 
+variable "base_ami_id" {
+  type        = string
+  description = "The base AMI ID to use for the addons build"
+  default     = "" # This will be set by the pipeline
+}
+
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 } 
