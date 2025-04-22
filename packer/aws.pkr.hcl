@@ -3,7 +3,7 @@ source "amazon-ebs" "AWS_BASE" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-0363cc129f9946994"
+  source_ami    = "ami-084b4ce2bb19cbf2a"
   ssh_username  = "ec2-user"
 
   tags = {
