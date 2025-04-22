@@ -79,4 +79,4 @@ jobs:
         env:
           PACKER_LOG: 1
         run: |
-          packer build -only="informatica-aws.*" packer/
+          packer build -only="aws-base.*" packer/
