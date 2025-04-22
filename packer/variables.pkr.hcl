@@ -54,12 +54,6 @@ variable "instance_type" {
   default     = "t2.large"
 }
 
-variable "base_ami_id" {
-  type        = string
-  description = "Base AMI ID to use for building the addons AMI"
-  default     = ""
-}
-
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
 } 

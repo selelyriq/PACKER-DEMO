@@ -52,16 +52,4 @@ build {
       "sudo -E /images/informatica_install.sh"
     ]
   }
-
-  # Install AWS-specific tools
-  provisioner "shell" {
-    inline = [
-      "sudo yum update -y",
-      "sudo yum install -y amazon-cloudwatch-agent",
-      "sudo yum install -y amazon-ssm-agent",
-      "sudo systemctl enable amazon-ssm-agent",
-      "sudo systemctl start amazon-ssm-agent",
-      "echo 'CloudWatch Agent installed. Config fetch will happen at runtime.'"
-    ]
-  }
 }
