@@ -51,7 +51,7 @@ variable "aws_region" {
 variable "instance_type" {
   type        = string
   description = "EC2 instance type to use for building the AMI"
-  default     = "m5.large"
+  default     = "t2.large"
 }
 
 variable "base_ami_id" {

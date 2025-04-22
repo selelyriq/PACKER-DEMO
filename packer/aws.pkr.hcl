@@ -1,9 +1,9 @@
 # Source block for AWS
-source "amazon-ebs" "informatica" {
+source "amazon-ebs" "AWS_BASE" {
   region        = var.aws_region
   instance_type = var.instance_type
   ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-0cc2ed4853f2b5d33"
+  source_ami    = "ami-0363cc129f9946994"
   ssh_username  = "ec2-user"
 
   tags = {
@@ -16,8 +16,8 @@ source "amazon-ebs" "informatica" {
 
 # Build block for AWS
 build {
-  name    = "informatica-aws"
-  sources = ["source.amazon-ebs.informatica"]
+  name    = "aws-base"
+  sources = ["source.amazon-ebs.AWS_BASE"]
 
   # Upload and prepare the Informatica install script
   provisioner "file" {
