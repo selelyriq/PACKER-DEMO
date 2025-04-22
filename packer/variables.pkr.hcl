@@ -1,44 +1,19 @@
 # Common Variables
-variable "informatica_script_path" {
+variable "hello_world_script_path" {
   type    = string
-  default = "scripts/informatica_install.sh"
+  default = "scripts/hello_world.sh"
 }
 
 variable "image_name_prefix" {
   type        = string
   description = "Prefix for the AMI name"
-  default     = "informatica"
+  default     = "hello_world"
 }
 
 variable "image_version" {
   type        = string
   description = "Version of the AMI"
   default     = "1.0.0"
-}
-
-# Informatica Installation Variables
-variable "infauser_name" {
-  type        = string
-  description = "Informatica user name"
-  default     = "infauser"
-}
-
-variable "infauser_group" {
-  type        = string
-  description = "Informatica user group"
-  default     = "infauser"
-}
-
-variable "infauser_gid" {
-  type        = string
-  description = "Informatica user group ID"
-  default     = "1001"
-}
-
-variable "infauser_uid" {
-  type        = string
-  description = "Informatica user ID"
-  default     = "1001"
 }
 
 # AWS-specific variables

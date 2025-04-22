@@ -19,37 +19,25 @@ build {
   name    = "aws-base"
   sources = ["source.amazon-ebs.AWS_BASE"]
 
-  # Upload and prepare the Informatica install script
+  # Upload and prepare the hello world script
   provisioner "file" {
-    source      = "packer/scripts/informatica_install.sh"
-    destination = "/tmp/informatica_install.sh"
+    source      = "packer/scripts/hello_world.sh"
+    destination = "/tmp/hello_world.sh"
   }
 
   # Set up environment variables for the install script
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /images",
-      "sudo mv /tmp/informatica_install.sh /images/informatica_install.sh",
-      "sudo chmod +x /images/informatica_install.sh"
+      "sudo mv /tmp/hello_world.sh /images/hello_world.sh",
+      "sudo chmod +x /images/hello_world.sh"
     ]
   }
 
-  # Set up environment variables
+  # Run the hello world script
   provisioner "shell" {
     inline = [
-      "echo 'export infauseruname=${var.infauser_name}' | sudo tee -a /tmp/informatica_env.sh",
-      "echo 'export infausergname=${var.infauser_group}' | sudo tee -a /tmp/informatica_env.sh",
-      "echo 'export infausergid=${var.infauser_gid}' | sudo tee -a /tmp/informatica_env.sh",
-      "echo 'export infauseruid=${var.infauser_uid}' | sudo tee -a /tmp/informatica_env.sh",
-      "sudo chmod +x /tmp/informatica_env.sh"
-    ]
-  }
-
-  # Run the Informatica install script
-  provisioner "shell" {
-    inline = [
-      "source /tmp/informatica_env.sh",
-      "sudo -E /images/informatica_install.sh"
+      "sudo -E /images/hello_world.sh"
     ]
   }
 }
