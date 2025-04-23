@@ -31,4 +31,39 @@ variable "instance_type" {
 
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
-} 
+}
+
+# Azure-specific variables
+variable "client_id" {
+  type        = string
+  description = "Azure client ID"
+}
+
+variable "tenant_id" {
+  type        = string
+  description = "Azure tenant ID"
+}
+
+variable "subscription_id" {
+  type        = string
+  description = "Azure subscription ID"
+}
+
+variable "resource_group_name" {
+  type        = string
+  description = "Resource group name to use for building the AMI"
+  default     = "Work_Testing"
+}
+
+variable "location" {
+  type        = string
+  description = "Azure location to build the AMI in"
+  default     = "eastus"
+}
+
+variable "vm_size" {
+  type        = string
+  description = "Azure VM size to use for building the AMI"
+  default     = "Standard_D2s_v3"
+}
+

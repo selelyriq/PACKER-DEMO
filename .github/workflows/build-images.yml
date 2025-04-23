@@ -80,3 +80,28 @@ jobs:
           PACKER_LOG: 1
         run: |
           packer build -only="aws-base.*" packer/
+
+  build-azure:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: "1.8.5"
+      
+      - name: Initialize Packer
+        run: packer init packer/
+
+      - name: Configure Azure Credentials
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build Azure Image
+        run: packer build -only="azure-base.*" packer/
+        
