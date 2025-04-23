@@ -34,20 +34,6 @@ locals {
 }
 
 # Azure-specific variables
-variable "client_id" {
-  type        = string
-  description = "Azure client ID"
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "Azure tenant ID"
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "Azure subscription ID"
-}
 
 variable "resource_group_name" {
   type        = string
