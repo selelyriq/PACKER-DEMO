@@ -104,7 +104,7 @@ jobs:
           client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
           enable-AzPSSession: true
           environment: 'AzureCloud'
-          auth-type: 'SERVICE_PRINCIPAL'
+          auth-type: 'IDENTITY'
 
       - name: Build Azure Image
         run: packer build -only="azure-base.*" packer/
