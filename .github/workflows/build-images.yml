@@ -102,7 +102,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
           environment: 'AzureCloud'
-          auth-type: 'servicePrincipal'
+          auth-type: 'SERVICE_PRINCIPAL'
 
       - name: Build Azure Image
         run: packer build -only="azure-base.*" packer/
