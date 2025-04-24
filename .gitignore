@@ -9,6 +9,7 @@ packer_cache/
 
 # Local variables
 local.pkrvars.hcl
+azure.auto.pkrvars.hcl
 
 # Packer variable files
 *.auto.pkrvars.hcl
