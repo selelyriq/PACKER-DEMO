@@ -37,16 +37,19 @@ locals {
 variable "client_id" {
   type        = string
   description = "Azure client ID"
+  default = env("AZURE_CLIENT_ID")
 }
 
 variable "client_secret" {
   type        = string
   description = "Azure client secret"
+  default = env("AZURE_CLIENT_SECRET")
 }
 
 variable "subscription_id" {
   type        = string
   description = "Azure subscription ID"
+  default = env("AZURE_SUBSCRIPTION_ID")
 }
 
 variable "resource_group_name" {
