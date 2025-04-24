@@ -50,7 +50,6 @@ variable "subscription_id" {
   description = "Azure subscription ID"
 }
 
-
 variable "resource_group_name" {
   type        = string
   description = "Resource group name to use for building the AMI"
@@ -68,4 +67,3 @@ variable "vm_size" {
   description = "Azure VM size to use for building the AMI"
   default     = "Standard_D2s_v3"
 }
-

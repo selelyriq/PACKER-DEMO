@@ -1,9 +1,9 @@
 # Source block for Azure
 source "azure-arm" "AZURE_BASE" {
   # Azure authentication
-  client_id       = var.client_id
-  subscription_id = var.subscription_id
-  client_secret   = var.client_secret
+  client_id       = env("AZURE_CLIENT_ID")
+  subscription_id = env("AZURE_SUBSCRIPTION_ID")
+  client_secret   = env("AZURE_CLIENT_SECRET")
   
   # Resource group and location
   managed_image_resource_group_name = var.resource_group_name
