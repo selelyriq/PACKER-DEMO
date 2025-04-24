@@ -21,7 +21,7 @@ build {
 
   # Upload and prepare the hello world script
   provisioner "file" {
-    source      = "../scripts/hello_world.sh"
+    source      = "scripts/hello_world.sh"
     destination = "/tmp/hello_world.sh"
   }
 

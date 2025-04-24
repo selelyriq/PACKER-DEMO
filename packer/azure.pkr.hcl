@@ -3,8 +3,7 @@ source "azure-arm" "AZURE_BASE" {
   # Azure authentication
   client_id       = var.client_id
   subscription_id = var.subscription_id
-  tenant_id       = var.tenant_id
-
+  client_secret   = var.client_secret
   # Resource group and location
   managed_image_resource_group_name = var.resource_group_name
   managed_image_name                = "${var.image_name_prefix}-azure-${var.image_version}-${local.timestamp}"
@@ -43,7 +42,7 @@ build {
 
   # Upload and prepare the hello world script
   provisioner "file" {
-    source      = "../scripts/hello_world.sh"
+    source      = "scripts/hello_world.sh"
     destination = "/tmp/hello_world.sh"
   }
 
