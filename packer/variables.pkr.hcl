@@ -45,13 +45,13 @@ variable "custom_install_script" {
 variable "base_image_name" {
   type        = string
   description = "Base name prefix of the image to search for (e.g., 'rhel-9')"
-  default     = "rhel-9"
+  default     = "RHEL-9.2.0_HVM-*"
 }
 
 variable "base_image_owner" {
   type        = string
-  description = "Owner of the base image"
-  default     = "self"
+  description = "Owner of the base image (Red Hat's AWS account ID)"
+  default     = "309956199498"  # Red Hat's AWS account ID
 }
 
 locals {
