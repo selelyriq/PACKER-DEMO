@@ -1,9 +1,4 @@
 # Common Variables
-variable "hello_world_script_path" {
-  type    = string
-  default = "scripts/hello_world.sh"
-}
-
 variable "image_name_prefix" {
   type        = string
   description = "Prefix for the AMI name"
@@ -16,6 +11,12 @@ variable "image_version" {
   default     = "1.0.0"
 }
 
+variable "environment" {
+  type        = string
+  description = "Environment (e.g., 'production')"
+  default     = "production"
+}
+
 # AWS-specific variables
 variable "aws_region" {
   type        = string
@@ -26,46 +27,34 @@ variable "aws_region" {
 variable "instance_type" {
   type        = string
   description = "EC2 instance type to use for building the AMI"
-  default     = "t2.large"
+  default     = "t2.micro"
+}
+
+variable "ssh_username" {
+  type        = string
+  description = "SSH username for the AMI"
+  default     = "ec2-user"
+}
+
+variable "custom_install_script" {
+  type        = string
+  description = "Path to a custom install script to inject into the AMI"
+  default     = "scripts/hello_world.sh"
+}
+
+variable "base_image_name" {
+  type        = string
+  description = "Base name prefix of the image to search for (e.g., 'rhel-9')"
+  default     = "rhel-9"
+}
+
+variable "base_image_owner" {
+  type        = string
+  description = "Owner of the base image"
+  default     = "self"
 }
 
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
-}
-
-# Azure-specific variables
-variable "client_id" {
-  type        = string
-  description = "Azure client ID"
-  default = "75caa55b-40d6-42ea-90aa-34d5a0b2a083"
-}
-
-variable "client_secret" {
-  type        = string
-  description = "Azure client secret"
-  default = "d47e7f77-2229-4b6e-bf20-38758a6d6552"
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "Azure subscription ID"
-  default = "ec4b20b1-fcd0-4628-90f6-034306aeec56"
-}
-
-variable "resource_group_name" {
-  type        = string
-  description = "Resource group name to use for building the AMI"
-  default     = "Work_Testing"
-}
-
-variable "location" {
-  type        = string
-  description = "Azure location to build the AMI in"
-  default     = "eastus"
-}
-
-variable "vm_size" {
-  type        = string
-  description = "Azure VM size to use for building the AMI"
-  default     = "Standard_D2s_v3"
+  ami_name = "${var.image_name_prefix}-${var.environment}-${var.image_version}-${local.timestamp}"
 }

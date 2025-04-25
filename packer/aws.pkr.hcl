@@ -1,43 +1,86 @@
-# Source block for AWS
-source "amazon-ebs" "AWS_BASE" {
-  region        = var.aws_region
-  instance_type = var.instance_type
-  ami_name      = "${var.image_name_prefix}-aws-${var.image_version}-${local.timestamp}"
-  source_ami    = "ami-084b4ce2bb19cbf2a"
-  ssh_username  = "ec2-user"
+# AWS AMI Builder Configuration
 
-  tags = {
-    Name        = "${var.image_name_prefix}-aws"
-    Version     = var.image_version
-    Environment = "production"
-    Builder     = "packer"
+# Find the latest base AMI
+data "amazon-ami" "base" {
+  most_recent = true
+  owners      = [var.base_image_owner]
+
+  filters = {
+    name                = "${var.base_image_name}*"
+    virtualization-type = "hvm"
+    root-device-type    = "ebs"
+    state              = "available"
   }
 }
 
-# Build block for AWS
+# Base AWS Builder Configuration
+source "amazon-ebs" "base" {
+  region          = var.aws_region
+  instance_type   = var.instance_type
+  ami_name        = local.ami_name
+  source_ami      = data.amazon-ami.base.id
+  ssh_username    = var.ssh_username
+  ami_description = "Golden AMI built with Packer for ${var.environment}"
+
+  tags = {
+    Name          = local.ami_name
+    Version       = var.image_version
+    Environment   = var.environment
+    Builder       = "packer"
+    BaseImageId   = "{{ .SourceAMI }}"
+    BaseImageName = "{{ .SourceAMIName }}"
+  }
+
+  dynamic "tag" {
+    for_each = data.amazon-ami.base.tags
+    content {
+      key   = "Base_${tag.key}"
+      value = tag.value
+    }
+  }
+}
+
+# Build Configuration
 build {
-  name    = "aws-base"
-  sources = ["source.amazon-ebs.AWS_BASE"]
+  name    = "golden-ami"
+  sources = ["source.amazon-ebs.base"]
 
-  # Upload and prepare the hello world script
+  # Upload the custom install script
   provisioner "file" {
-    source      = "packer/scripts/hello_world.sh"
-    destination = "/tmp/hello_world.sh"
+    source      = "${path.root}/${var.custom_install_script}"
+    destination = "/tmp/custom_install.sh"
   }
 
-  # Set up environment variables for the install script
+  # Prepare the environment
   provisioner "shell" {
     inline = [
-      "sudo mkdir -p /images",
-      "sudo mv /tmp/hello_world.sh /images/hello_world.sh",
-      "sudo chmod +x /images/hello_world.sh"
+      "sudo mkdir -p /opt/scripts",
+      "sudo mv /tmp/custom_install.sh /opt/scripts/",
+      "sudo chmod +x /opt/scripts/custom_install.sh",
+      "echo 'Script preparation complete'",
     ]
   }
 
-  # Run the hello world script
+  # Execute the custom install script
   provisioner "shell" {
     inline = [
-      "sudo -E /images/hello_world.sh"
+      "echo 'Starting custom installation...'",
+      "sudo -E /opt/scripts/custom_install.sh",
+      "echo 'Custom installation complete'",
     ]
+  }
+
+  # Cleanup
+  provisioner "shell" {
+    inline = [
+      "sudo rm -rf /opt/scripts",
+      "echo 'Cleanup complete'",
+    ]
+  }
+
+  # Post-processor for validation
+  post-processor "manifest" {
+    output = "manifest.json"
+    strip_path = true
   }
 }
