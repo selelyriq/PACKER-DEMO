@@ -48,7 +48,7 @@ build {
   # Upload the custom install script
   provisioner "file" {
     source      = "${path.root}/${var.custom_install_script}"
-    destination = "custom_install.sh"
+    destination = "/tmp/custom_install.sh"
   }
 
   # Prepare the environment
