@@ -61,6 +61,45 @@ build {
     ]
   }
 
+  # Install and configure AWS SSM and CloudWatch Agents before custom install
+  provisioner "shell" {
+    inline = [
+      "echo 'Installing AWS Agents...'",
+      "sudo yum install -y -q amazon-ssm-agent amazon-cloudwatch-agent",
+      "sudo systemctl enable amazon-ssm-agent",
+      "sudo systemctl start amazon-ssm-agent",
+      "sudo systemctl enable amazon-cloudwatch-agent",
+      "sudo systemctl start amazon-cloudwatch-agent",
+      "echo 'AWS Agents installed successfully.'",
+      "echo 'Configuring CloudWatch Agent...'",
+      "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
+      "cat <<EOF | sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n" +
+      "{\n" +
+      "  \"metrics\": {\n" +
+      "    \"append_dimensions\": {\n" +
+      "      \"AutoScalingGroupName\": \"\\$${aws:AutoScalingGroupName}\",\n" +
+      "      \"InstanceId\": \"\\$${aws:InstanceId}\",\n" +
+      "      \"InstanceType\": \"\\$${aws:InstanceType}\",\n" +
+      "      \"ImageId\": \"\\$${aws:ImageId}\"\n" +
+      "    },\n" +
+      "    \"metrics_collected\": {\n" +
+      "      \"cpu\": {\n" +
+      "        \"measurement\": [\"cpu_usage_idle\", \"cpu_usage_iowait\", \"cpu_usage_user\", \"cpu_usage_system\"],\n" +
+      "        \"metrics_collection_interval\": 60\n" +
+      "      },\n" +
+      "      \"mem\": {\n" +
+      "        \"measurement\": [\"mem_used_percent\"],\n" +
+      "        \"metrics_collection_interval\": 60\n" +
+      "      }\n" +
+      "    }\n" +
+      "  }\n" +
+      "}\n" +
+      "EOF",
+      "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s",
+      "echo 'CloudWatch Agent configured and started.'"
+    ]
+  }
+
   # Execute the custom install script
   provisioner "shell" {
     inline = [
