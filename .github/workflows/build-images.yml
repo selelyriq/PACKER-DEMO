@@ -1,20 +1,16 @@
 name: Build Multi-Cloud Images
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
     inputs:
       base_image_name:
         description: 'Prefix to match base AMI (e.g., "rhel-9")'
         required: true
-        default: 'rhel-9'
+        default: 'RHEL-9.2.0_HVM-*'
       custom_install_script:
         description: 'Path to the custom install script (e.g., "scripts/app1.sh")'
         required: true
-        default: 'scripts/install-app1.sh'
+        default: 'scripts/hello_world.sh'
       environment:
         description: 'Deployment environment (e.g., "dev", "prod")'
         required: false
