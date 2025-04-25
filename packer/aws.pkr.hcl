@@ -48,14 +48,14 @@ build {
   # Upload the custom install script
   provisioner "file" {
     source      = "${path.root}/${var.custom_install_script}"
-    destination = "/tmp/custom_install.sh"
+    destination = "destination = "custom_install.sh""
   }
 
   # Prepare the environment
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /opt/scripts",
-      "sudo mv /tmp/custom_install.sh /opt/scripts/",
+      "sudo mv destination = "custom_install.sh" /opt/scripts/",
       "sudo chmod +x /opt/scripts/custom_install.sh",
       "echo 'Script preparation complete'",
     ]
