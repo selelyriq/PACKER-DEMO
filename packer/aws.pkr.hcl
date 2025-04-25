@@ -73,28 +73,31 @@ build {
       "echo 'AWS Agents installed successfully.'",
       "echo 'Configuring CloudWatch Agent...'",
       "sudo mkdir -p /opt/aws/amazon-cloudwatch-agent/etc",
-      "cat <<EOF | sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n" +
-      "{\n" +
-      "  \"metrics\": {\n" +
-      "    \"append_dimensions\": {\n" +
-      "      \"AutoScalingGroupName\": \"\\$${aws:AutoScalingGroupName}\",\n" +
-      "      \"InstanceId\": \"\\$${aws:InstanceId}\",\n" +
-      "      \"InstanceType\": \"\\$${aws:InstanceType}\",\n" +
-      "      \"ImageId\": \"\\$${aws:ImageId}\"\n" +
-      "    },\n" +
-      "    \"metrics_collected\": {\n" +
-      "      \"cpu\": {\n" +
-      "        \"measurement\": [\"cpu_usage_idle\", \"cpu_usage_iowait\", \"cpu_usage_user\", \"cpu_usage_system\"],\n" +
-      "        \"metrics_collection_interval\": 60\n" +
-      "      },\n" +
-      "      \"mem\": {\n" +
-      "        \"measurement\": [\"mem_used_percent\"],\n" +
-      "        \"metrics_collection_interval\": 60\n" +
-      "      }\n" +
-      "    }\n" +
-      "  }\n" +
-      "}\n" +
-      "EOF",
+      <<-EOT
+      cat <<EOF | sudo tee /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+      {
+        "metrics": {
+          "append_dimensions": {
+            "AutoScalingGroupName": "\\$${aws:AutoScalingGroupName}",
+            "InstanceId": "\\$${aws:InstanceId}",
+            "InstanceType": "\\$${aws:InstanceType}",
+            "ImageId": "\\$${aws:ImageId}"
+          },
+          "metrics_collected": {
+            "cpu": {
+              "measurement": ["cpu_usage_idle", "cpu_usage_iowait", "cpu_usage_user", "cpu_usage_system"],
+              "metrics_collection_interval": 60
+            },
+            "mem": {
+              "measurement": ["mem_used_percent"],
+              "metrics_collection_interval": 60
+            }
+          }
+        }
+      }
+      EOF
+      EOT
+      ,
       "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s",
       "echo 'CloudWatch Agent configured and started.'"
     ]
