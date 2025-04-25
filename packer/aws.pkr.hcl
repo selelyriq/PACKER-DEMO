@@ -55,7 +55,7 @@ build {
   provisioner "shell" {
     inline = [
       "sudo mkdir -p /opt/scripts",
-      "sudo mv ~/custom_install.sh /opt/scripts/",
+      "sudo mv /tmp/custom_install.sh /opt/scripts/",
       "sudo chmod +x /opt/scripts/custom_install.sh",
       "echo 'Script preparation complete'",
     ]
