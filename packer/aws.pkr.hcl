@@ -42,7 +42,7 @@ source "amazon-ebs" "base" {
 
 # Build Configuration
 build {
-  name    = "golden-ami"
+  name    = "aws-base"
   sources = ["source.amazon-ebs.base"]
 
   # Upload the custom install script

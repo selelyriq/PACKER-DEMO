@@ -17,6 +17,12 @@ variable "environment" {
   default     = "production"
 }
 
+variable "custom_ami_name" {
+  type        = string
+  description = "Custom name for the AMI (will be appended with timestamp)"
+  default     = null  # If null, will use the default naming pattern
+}
+
 # AWS-specific variables
 variable "aws_region" {
   type        = string
@@ -56,5 +62,5 @@ variable "base_image_owner" {
 
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
-  ami_name = "${var.image_name_prefix}-${var.environment}-${var.image_version}-${local.timestamp}"
+  ami_name = var.custom_ami_name != null ? "${var.custom_ami_name}-${local.timestamp}" : "${var.image_name_prefix}-${var.environment}-${var.image_version}-${local.timestamp}"
 }

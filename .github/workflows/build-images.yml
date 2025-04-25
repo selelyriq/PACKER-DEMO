@@ -6,6 +6,23 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      base_image_name:
+        description: 'Prefix to match base AMI (e.g., "rhel-9")'
+        required: true
+        default: 'rhel-9'
+      custom_install_script:
+        description: 'Path to the custom install script (e.g., "scripts/app1.sh")'
+        required: true
+        default: 'scripts/install-app1.sh'
+      environment:
+        description: 'Deployment environment (e.g., "dev", "prod")'
+        required: false
+        default: 'production'
+      image_version:
+        description: 'Image version tag'
+        required: false
+        default: '1.0.0'
 
 # Add permissions for OIDC token
 permissions:
@@ -49,6 +66,8 @@ jobs:
   build-aws:
     needs: validate
     runs-on: ubuntu-latest
+    outputs:
+      ami_id: ${{ steps.export-ami-id.outputs.ami_id }}
     steps:
       - uses: actions/checkout@v4
       
@@ -64,7 +83,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::291847254387:role/GitHubPipeline
-          aws-region: us-east-2
+          aws-region: ${{ inputs.aws_region || 'us-east-2' }}
           role-session-name: GitHubPipeline
 
       # Create Packer Variables File
@@ -73,6 +92,11 @@ jobs:
           cat << EOF > packer/variables.auto.pkrvars.hcl
           aws_region = "us-east-2"
           instance_type = "t3.medium"
+          environment = "${{ inputs.environment || 'production' }}"
+          image_version = "${{ inputs.image_version || '1.0.0' }}"
+          ${{ inputs.custom_ami_name && format('custom_ami_name = "{0}"', inputs.custom_ami_name) }}
+          base_image_name = "${{ inputs.base_image_name }}"
+          custom_install_script = "${{ inputs.custom_install_script }}"
           EOF
 
       - name: Build AWS Image
@@ -80,3 +104,10 @@ jobs:
           PACKER_LOG: 1
         run: |
           packer build -only="aws-base.*" packer/
+
+      - name: Export AMI ID
+        id: export-ami-id
+        run: |
+          ami_id=$(jq -r '.builds[0].artifact_id' packer/manifest.json | cut -d ':' -f2)
+          echo "AMI_ID=$ami_id" >> $GITHUB_ENV
+          echo "::set-output name=ami_id::$ami_id"
