@@ -99,6 +99,13 @@ jobs:
           custom_install_script = "${{ inputs.custom_install_script }}"
           EOF
 
+      - name: Verify Custom Install Script Exists
+        run: |
+          if [ ! -f "${{ inputs.custom_install_script }}" ]; then
+            echo "Error: Custom install script not found at '${{ inputs.custom_install_script }}'"
+            exit 1
+          fi
+
       - name: Build AWS Image
         env:
           PACKER_LOG: 1
