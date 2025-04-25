@@ -64,10 +64,15 @@ build {
   # Install and configure AWS SSM and CloudWatch Agents before custom install
   provisioner "shell" {
     inline = [
-      "echo 'Installing AWS Agents...'",
-      "sudo yum install -y -q amazon-ssm-agent amazon-cloudwatch-agent",
+      "echo 'Downloading and installing AWS SSM Agent...'",
+      "curl -o /tmp/ssm-agent.rpm https://s3.amazonaws.com/amazon-ssm-us-east-2/latest/linux_amd64/amazon-ssm-agent.rpm",
+      "sudo yum install -y /tmp/ssm-agent.rpm",
       "sudo systemctl enable amazon-ssm-agent",
       "sudo systemctl start amazon-ssm-agent",
+
+      "echo 'Downloading and installing AWS CloudWatch Agent...'",
+      "curl -o /tmp/amazon-cloudwatch-agent.rpm https://s3.amazonaws.com/amazoncloudwatch-agent-us-east-2/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm",
+      "sudo yum install -y /tmp/amazon-cloudwatch-agent.rpm",
       "sudo systemctl enable amazon-cloudwatch-agent",
       "sudo systemctl start amazon-cloudwatch-agent",
       "echo 'AWS Agents installed successfully.'",
