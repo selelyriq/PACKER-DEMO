@@ -99,10 +99,14 @@ jobs:
           custom_install_script = "${{ inputs.custom_install_script }}"
           EOF
 
-      - name: Verify Custom Install Script Exists
+      - name: Validate Custom Install Script Input
         run: |
-          if [ ! -f "${{ inputs.custom_install_script }}" ]; then
-            echo "Error: Custom install script not found at '${{ inputs.custom_install_script }}'"
+          if [ -z "${{ inputs.custom_install_script }}" ]; then
+            echo "Error: custom_install_script input is required"
+            exit 1
+          fi
+          if [ ! -f "packer/${{ inputs.custom_install_script }}" ]; then
+            echo "Error: Custom install script not found at 'packer/${{ inputs.custom_install_script }}'"
             exit 1
           fi
 
