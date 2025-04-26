@@ -13,3 +13,4 @@ cat /etc/os-release
 
 echo "Hello World installation script completed successfully!"
 exit 0
+#
