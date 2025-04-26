@@ -62,5 +62,5 @@ variable "base_image_owner" {
 
 locals {
   timestamp = regex_replace(timestamp(), "[- TZ:]", "")
-  ami_name = var.custom_ami_name != null ? "${var.custom_ami_name}-${local.timestamp}" : "${var.image_name_prefix}-${var.environment}-${var.image_version}-${local.timestamp}"
+  ami_name = var.custom_ami_name != null ? "${var.custom_ami_name}-${var.environment}-${var.image_version}-${local.timestamp}" : "${var.image_name_prefix}-${var.environment}-${var.image_version}-${local.timestamp}"
 }

@@ -19,6 +19,10 @@ on:
         description: 'Image version tag'
         required: false
         default: '1.0.0'
+      custom_ami_name:
+        description: 'Custom name for the AMI (version and timestamp will be appended)'
+        required: false
+        default: ''
 
 # Add permissions for OIDC token
 permissions:
@@ -90,9 +94,9 @@ jobs:
           instance_type = "t3.medium"
           environment = "${{ inputs.environment || 'production' }}"
           image_version = "${{ inputs.image_version || '1.0.0' }}"
-          ${{ inputs.custom_ami_name && format('custom_ami_name = "{0}"', inputs.custom_ami_name) }}
           base_image_name = "${{ inputs.base_image_name }}"
           custom_install_script = "${{ inputs.custom_install_script }}"
+          ${{ inputs.custom_ami_name && format('custom_ami_name = "{0}"', inputs.custom_ami_name) }}
           EOF
 
       - name: Validate Custom Install Script Input
