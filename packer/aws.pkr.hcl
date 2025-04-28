@@ -64,7 +64,7 @@ build {
   # Install and configure AWS SSM and CloudWatch Agents before custom install
   # Upload AWS agent installer script
   provisioner "file" {
-    source = "${path.root}/scripts/install_aws_agents.sh"aw
+    source = "${path.root}/scripts/install_aws_agents.sh"
     destination = "/tmp/install_aws_agents.sh"
   }
 
