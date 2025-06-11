@@ -51,13 +51,14 @@ variable "custom_install_script" {
 variable "base_image_name" {
   type        = string
   description = "Base name prefix of the image to search for (e.g., 'rhel-9')"
-  default     = "RHEL-9.2.0_HVM-*"
+  default     = "resolve:ssm:/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
+"
 }
 
 variable "base_image_owner" {
   type        = string
   description = "Owner of the base image (Red Hat's AWS account ID)"
-  default     = "309956199498"  # Red Hat's AWS account ID
+  default     = "137112412989"  # Red Hat's AWS account ID
 }
 
 locals {
